@@ -1,40 +1,17 @@
 {
-  "sites": [
-    "https://www.americanisshinryu.com",
-    "https://wuikausa.org",
-    "https://www.iika.org/isshin-ryu-events",
-    "https://www.goshinisshinryukarate.com/events.html",
-    "https://www.theihof.com",
-    "https://isshinryukarate.com",
-    "https://oimartialarts.com",
-    "https://isshinryuworld.com",
-    "https://www.dragonsociety.com/events",
-    "https://oikka.com/events",
-    "https://www.mataction.com/en",
-    "https://isshinryukarate.com",
-    "https://pennstatekarate.org",
-    "https://www.daichiisshinryu.com",
-    "https://texasisshinryu.org",
-    "https://nashvilledojo.com/",
-    "https://www.iikf.org/",
-    "https://www.usik.org/",
-    "https://isshinryu-karate-do.com/",
-    "https://www.bluewolfmartialarts.com/",
-    "https://capefearisshinryu.com/",
-    "https://coloradokarateassociation.org/",
-    "https://www.sportkaratewest.com/",
-    "https://coloradobudokan.com/",
-    "https://ikapgh.com/"
-  ],
-  "schedule_interval_hours": 24,
-  "llm_config": {
-    "enabled": true,
-    "api_base": "http://host.docker.internal:11434/v1",
-    "model": "llama3",
-    "api_key": "ollama"
-  },
-  "crawling_config": {
-    "max_depth": 4,
-    "max_pages_per_site": 30
-  }
+    "sites": [
+        "https://example.com",
+        "https://example-2.com"
+    ],
+    "schedule_interval_hours": 24,
+    "llm_config": {
+        "enabled": true,
+        "api_base": "http://host.docker.internal:11434/v1",
+        "model": "llama3",
+        "api_key": "ollama"
+    },
+    "crawling_config": {
+        "max_depth": 2,
+        "max_pages_per_site": 10
+    }
 }

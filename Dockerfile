@@ -30,7 +30,7 @@ RUN playwright install --with-deps chromium
 
 # Copy source code and config
 COPY src/ ./src/
-COPY config.json .
+
 
 # Create data directory
 RUN mkdir -p data
