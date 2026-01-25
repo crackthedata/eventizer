@@ -49,35 +49,43 @@ Edit `config.json` to add target websites or change settings:
   },
   "crawling_config": {
     "max_depth": 2,
-    "max_pages_per_site": 20,
-    "months_to_scan": 12
+    "max_pages_per_site": 20
   }
 }
 ```
 
 ### 3. Build & Run
+First, create your configuration file:
+1. Copy `config_example.json` to `config.json`.
+2. Edit `config.json` with your real target sites and configuration settings.
+
+**Important:** The Docker image does **not** contain `config.json` by default. You must provide it at runtime via a volume mount.
+
 Build the Docker image:
 ```bash
 docker build -t eventizer .
 ```
 
-Run the scraper:
-```bash
-docker run eventizer
-```
+Run the scraper (Mounting config and data is **REQUIRED**):
 
-Run the scraper (allocating a volume to save data locally):
 **PowerShell:**
 ```powershell
-docker run -v ${PWD}/data:/app/data eventizer
+docker run -d --name eventizer `
+  -v "${PWD}/data:/app/data" `
+  -v "${PWD}/config.json:/app/config.json" `
+  eventizer
 ```
 
 **Bash:**
 ```bash
-docker run -v $(pwd)/data:/app/data eventizer
+docker run -d --name eventizer \
+  -v "$(pwd)/data:/app/data" \
+  -v "$(pwd)/config.json:/app/config.json" \
+  eventizer
 ```
 
-The extracted events will be saved to `data/events_YYYY-MM-DD.json` (e.g., `events_2026-01-24.json`) in your current directory.
+
+
 
 ## Configuration & Security
 - **`config.json`**: This file contains your target sites and potential API keys. It is ignored by git (`.gitignore`) to prevent accidental commits.
