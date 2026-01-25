@@ -38,7 +38,7 @@ Edit `config.json` to add target websites or change settings:
 {
   "sites": [
     "https://example.com",
-    "https://another-tournament-site.com"
+    "https://another-example--site.com"
   ],
   "schedule_interval_hours": 24,
   "llm_config": {
@@ -46,6 +46,11 @@ Edit `config.json` to add target websites or change settings:
     "api_base": "http://host.docker.internal:11434/v1",
     "model": "llama3",
     "api_key": "ollama"
+  },
+  "crawling_config": {
+    "max_depth": 2,
+    "max_pages_per_site": 20,
+    "months_to_scan": 12
   }
 }
 ```
@@ -72,7 +77,11 @@ docker run -v ${PWD}/data:/app/data eventizer
 docker run -v $(pwd)/data:/app/data eventizer
 ```
 
-The extracted events will be saved to `data/events.json` in your current directory.
+The extracted events will be saved to `data/events_YYYY-MM-DD.json` (e.g., `events_2026-01-24.json`) in your current directory.
+
+## Configuration & Security
+- **`config.json`**: This file contains your target sites and potential API keys. It is ignored by git (`.gitignore`) to prevent accidental commits.
+- **`config_example.json`**: Use this as a template to create your own `config.json`.
 
 ## Detailed Architecture
 - `src/main.py`: Entry point, handles scheduling and async execution.

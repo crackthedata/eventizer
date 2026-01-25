@@ -82,15 +82,33 @@ class EventScraper:
                             except:
                                 pass
 
-                            content = await page.content()
-                            title = await page.title()
-                            self.logger.info(f"Visited: {title}")
-
-                            # Extract Events
-                            events = self.extract_events(content, current_url)
-                            if events:
-                                self.logger.info(f"  -> Found {len(events)} events.")
-                                all_events.extend(events)
+                            # Extract Events from Main Page and ALL Frames (Iframes)
+                            frames = page.frames
+                            self.logger.info(f"Scanning {len(frames)} frames on {current_url}...")
+                            
+                            for i, frame in enumerate(frames):
+                                try:
+                                    # Wait for frame to have some content if possible, or just grab it
+                                    frame_url = frame.url
+                                    frame_desc = "Main Frame" if frame == page.main_frame else f"Frame {i} ({frame_url[:50]}...)"
+                                    
+                                    # Simple Frame Analysis (Static HTML)
+                                    # Just get the content and analyze it. No navigation.
+                                    try:
+                                        # Wait for content to stabilize
+                                        await frame.wait_for_load_state("domcontentloaded", timeout=5000)
+                                    except:
+                                        pass
+                                    
+                                    frame_content = await frame.content()
+                                    events = self.extract_events(frame_content, current_url) 
+                                    
+                                    if events:
+                                        self.logger.info(f"  -> Found {len(events)} events in {frame_desc}.")
+                                        all_events.extend(events)
+                                            
+                                except Exception as e:
+                                    self.logger.debug(f"Error reading frame {i}: {e}")
                             
                             pages_scraped_count += 1
 
@@ -165,6 +183,10 @@ class EventScraper:
             self.logger.info("No structured data found. Attempting LLM extraction...")
             llm_events = self.llm_extraction(html_content)
             events.extend(llm_events)
+
+        # Post-processing: Add source URL to all events
+        for event in events:
+            event['source_url'] = url
 
         return events
 

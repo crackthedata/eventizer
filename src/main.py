@@ -42,17 +42,70 @@ async def job():
     scraper = EventScraper()
     events = await scraper.scrape_sites(sites)
     
+    # Filter out events with no name or no start date (empty or whitespace only)
+    events = [
+        e for e in events 
+        if e.get('name') and str(e.get('name')).strip() 
+        and e.get('startDate') and str(e.get('startDate')).strip()
+    ]
+    
     # Save the events to a JSON file
     data_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data')
     os.makedirs(data_dir, exist_ok=True)
-    output_path = os.path.join(data_dir, 'events.json')
+    
+    # 1. Initialize events_total.json if it doesn't exist
+    total_events_path = os.path.join(data_dir, 'events_total.json')
+    if not os.path.exists(total_events_path):
+        try:
+            with open(total_events_path, 'w', encoding='utf-8') as f:
+                json.dump([], f, indent=2)
+            logger.info(f"Initialized empty {total_events_path}")
+        except Exception as e:
+            logger.error(f"Failed to initialize {total_events_path}: {e}")
+
+    # 2. Save Daily File
+    date_str = time.strftime("%Y-%m-%d")
+    daily_output_path = os.path.join(data_dir, f'events_{date_str}.json')
     
     try:
-        with open(output_path, 'w', encoding='utf-8') as f:
+        with open(daily_output_path, 'w', encoding='utf-8') as f:
             json.dump(events, f, indent=2, ensure_ascii=False)
-        logger.info(f"Successfully saved {len(events)} events to {output_path}")
+        logger.info(f"Successfully saved {len(events)} events to {daily_output_path}")
     except Exception as e:
-        logger.error(f"Failed to save events to {output_path}: {e}")
+        logger.error(f"Failed to save events to {daily_output_path}: {e}")
+
+    # 3. Append to events_total.json with Deduplication (Check all fields)
+    try:
+        if os.path.exists(total_events_path):
+            with open(total_events_path, 'r', encoding='utf-8') as f:
+                try:
+                    total_events = json.load(f)
+                except json.JSONDecodeError:
+                    total_events = []
+        else:
+            total_events = []
+        
+        # Create a set of serialized events for O(1) existence check
+        # Sorting keys ensures consistent serialization
+        existing_signatures = {json.dumps(e, sort_keys=True) for e in total_events}
+        
+        new_events_count = 0
+        for event in events:
+            event_sig = json.dumps(event, sort_keys=True)
+            if event_sig not in existing_signatures:
+                total_events.append(event)
+                existing_signatures.add(event_sig) # Add to set to prevent duplicates within the new batch too if any
+                new_events_count += 1
+        
+        if new_events_count > 0:
+            with open(total_events_path, 'w', encoding='utf-8') as f:
+                json.dump(total_events, f, indent=2, ensure_ascii=False)
+            logger.info(f"Appended {new_events_count} new events to {total_events_path}")
+        else:
+            logger.info("No new unique events to append to total.")
+
+    except Exception as e:
+        logger.error(f"Failed to update {total_events_path}: {e}")
 
     logger.info("Scraping job finished.")
 
