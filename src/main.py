@@ -4,6 +4,8 @@ import schedule
 import logging
 import os
 import asyncio
+from datetime import datetime
+from dateutil import parser
 from scraper import EventScraper
 
 # Configure logging
@@ -48,6 +50,36 @@ async def job():
         if e.get('name') and str(e.get('name')).strip() 
         and e.get('startDate') and str(e.get('startDate')).strip()
     ]
+    
+    # Filter past events if configured
+    if config.get("filter_past_events", False):
+        logger.info("Filtering out past events...")
+        future_events = []
+        now = datetime.now()
+        for event in events:
+            start_date_raw = event.get('startDate')
+            try:
+                # Fuzzy parsing to handle various formats
+                dt = parser.parse(start_date_raw, fuzzy=True)
+                # If valid and in the future (or today)
+                if dt.date() >= now.date():
+                    future_events.append(event)
+                else:
+                    logger.debug(f"Dropping past event: {event.get('name')} ({start_date_raw})")
+            except Exception as e:
+                # If we can't parse the date, we probably shouldn't discard it blindly, 
+                # but if the user wants strictly *valid* future events, maybe we keeping it is safer 
+                # or dropping it is safer? 
+                # Let's keep it but log warning, or drop? User said "only contain events where startDate is today or after".
+                # If we can't parse, we don't know. 
+                # I will default to KEEPING unparseable dates to avoid data loss on bad formats, 
+                # unless strictness is required. But usually safe filtering implies dropping definitely past ones.
+                # Actually, let's log and KEEP if uncertain, to be non-destructive.
+                logger.warning(f"Could not parse date '{start_date_raw}' for event '{event.get('name')}'. Keeping it. Error: {e}")
+                future_events.append(event)
+        
+        logger.info(f"Filtered {len(events) - len(future_events)} past events. Remaining: {len(future_events)}")
+        events = future_events
     
     # Save the events to a JSON file
     data_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data')

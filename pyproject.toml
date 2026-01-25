@@ -13,7 +13,8 @@ dependencies = [
     "extruct (>=0.18.0,<0.19.0)",
     "beautifulsoup4 (>=4.14.3,<5.0.0)",
     "openai (>=2.15.0,<3.0.0)",
-    "html2text (>=2025.4.15,<2026.0.0)"
+    "html2text (>=2025.4.15,<2026.0.0)",
+    "python-dateutil (>=2.9.0.post0,<3.0.0)"
 ]
 
 

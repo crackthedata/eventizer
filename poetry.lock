@@ -998,6 +998,21 @@ rdflib = ">=7.0.0"
 requests = ">=2.32.3"
 
 [[package]]
+name = "python-dateutil"
+version = "2.9.0.post0"
+description = "Extensions to the standard Python datetime module"
+optional = false
+python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
+groups = ["main"]
+files = [
+    {file = "python-dateutil-2.9.0.post0.tar.gz", hash = "sha256:37dd54208da7e1cd875388217d5e00ebd4179249f90fb72437e91a35459a0ad3"},
+    {file = "python_dateutil-2.9.0.post0-py2.py3-none-any.whl", hash = "sha256:a8b2bc7bffae282281c8140a97d3aa9c14da0b136dfe83f850eea9a5f7470427"},
+]
+
+[package.dependencies]
+six = ">=1.5"
+
+[[package]]
 name = "rdflib"
 version = "7.5.0"
 description = "RDFLib is a Python library for working with RDF, a simple yet powerful language for representing information."
@@ -1187,4 +1202,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11"
-content-hash = "983e6df6f9550a99e30c72dc20f810c929e174e33ef03da868ec6d972bf15651"
+content-hash = "e5907754f316853c01365574ea4b8f9fc186faf4cf8ebc8fc214ca6993afbaa6"

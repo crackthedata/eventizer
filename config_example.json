@@ -4,6 +4,7 @@
         "https://example-2.com"
     ],
     "schedule_interval_hours": 24,
+    "filter_past_events": true,
     "llm_config": {
         "enabled": true,
         "api_base": "http://host.docker.internal:11434/v1",

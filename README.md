@@ -8,6 +8,7 @@ Eventizer is a containerized Python application designed to crawl and scrape mar
     - **Tier 1**: Extracts standard JSON-LD and Microdata (Schema.org) using `extruct`.
     - **Tier 2**: Fallback to Local LLM extraction for unstructured sites.
 - **Scheduling**: configurable scrape intervals (default: 24 hours).
+- **Event Filtering**: Optional filtering of past events to keep data relevant.
 - **Dockerized**: Easy to deploy and run in a lightweight container.
 
 ## Prerequisites
@@ -41,6 +42,7 @@ Edit `config.json` to add target websites or change settings:
     "https://another-example--site.com"
   ],
   "schedule_interval_hours": 24,
+  "filter_past_events": true,
   "llm_config": {
     "enabled": true,
     "api_base": "http://host.docker.internal:11434/v1",
@@ -86,6 +88,15 @@ docker run -d --name eventizer \
 
 
 
+
+
+### 4. Application Logs
+To verify the scraper is running and see what it's doing:
+
+```bash
+docker logs -f eventizer
+```
+Press `Ctrl+C` to stop following the logs (this will not stop the container).
 
 ## Configuration & Security
 - **`config.json`**: This file contains your target sites and potential API keys. It is ignored by git (`.gitignore`) to prevent accidental commits.
