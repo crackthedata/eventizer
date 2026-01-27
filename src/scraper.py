@@ -90,6 +90,12 @@ class EventScraper:
                                 try:
                                     # Wait for frame to have some content if possible, or just grab it
                                     frame_url = frame.url
+                                    
+                                    # Skip YouTube and other video platforms to save resources
+                                    if "youtube.com" in frame_url or "youtu.be" in frame_url or "vimeo.com" in frame_url:
+                                        self.logger.debug(f"Skipping video frame: {frame_url}")
+                                        continue
+
                                     frame_desc = "Main Frame" if frame == page.main_frame else f"Frame {i} ({frame_url[:50]}...)"
                                     
                                     # Simple Frame Analysis (Static HTML)
