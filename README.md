@@ -1,6 +1,6 @@
-# Eventizer: Martial Arts Event Aggregator
+# Eventizer: Locally Deployed Event Aggregator
 
-Eventizer is a containerized Python application designed to crawl and scrape martial arts event information from various websites. It uses **Playwright** for robust browser automation and integrates with a **Local LLM (Ollama)** to extract structured event data from unstructured HTML.
+Eventizer is a containerized Python application that crawls and scrapes event information from various websites. It uses **Playwright** for robust browser automation and integrates with a **Local LLM (Ollama)** to extract structured event data from unstructured HTML.
 
 ## Features
 - **Headless Browsing**: Uses Playwright (Chromium) to handle modern, dynamic websites.
@@ -85,10 +85,6 @@ docker run -d --name eventizer \
   -v "$(pwd)/config.json:/app/config.json" \
   eventizer
 ```
-
-
-
-
 
 ### 4. Application Logs
 To verify the scraper is running and see what it's doing:
