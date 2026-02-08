@@ -67,14 +67,6 @@ async def job():
                 else:
                     logger.debug(f"Dropping past event: {event.get('name')} ({start_date_raw})")
             except Exception as e:
-                # If we can't parse the date, we probably shouldn't discard it blindly, 
-                # but if the user wants strictly *valid* future events, maybe we keeping it is safer 
-                # or dropping it is safer? 
-                # Let's keep it but log warning, or drop? User said "only contain events where startDate is today or after".
-                # If we can't parse, we don't know. 
-                # I will default to KEEPING unparseable dates to avoid data loss on bad formats, 
-                # unless strictness is required. But usually safe filtering implies dropping definitely past ones.
-                # Actually, let's log and KEEP if uncertain, to be non-destructive.
                 logger.warning(f"Could not parse date '{start_date_raw}' for event '{event.get('name')}'. Keeping it. Error: {e}")
                 future_events.append(event)
         
@@ -95,7 +87,7 @@ async def job():
         except Exception as e:
             logger.error(f"Failed to initialize {total_events_path}: {e}")
 
-    # 2. Save Daily File
+    # 2. Save File
     date_str = time.strftime("%Y-%m-%d")
     daily_output_path = os.path.join(data_dir, f'events_{date_str}.json')
     
@@ -117,8 +109,7 @@ async def job():
         else:
             total_events = []
         
-        # Create a set of serialized events for O(1) existence check
-        # Sorting keys ensures consistent serialization
+        # Create a set of serialized events for  existence check
         existing_signatures = {json.dumps(e, sort_keys=True) for e in total_events}
         
         new_events_count = 0
@@ -150,7 +141,6 @@ def main():
     # Schedule subsequent runs
     config = load_config()
     interval = config.get("schedule_interval_hours", 24)
-    # schedule library is synchronous. We wrapped the async call.
     schedule.every(interval).hours.do(job_wrapper)
     logger.info(f"Scheduled scraping job every {interval} hours.")
 

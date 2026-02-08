@@ -22,8 +22,6 @@ class EventScraper:
             )
 
     def _load_llm_config(self):
-         # Helper to load config again or pass it in. For simplicity, reading file.
-         # In a real app, pass config to __init__
         try:
             config_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'config.json')
             with open(config_path, 'r') as f:
@@ -37,9 +35,7 @@ class EventScraper:
         Returns:
             list: A list of all extracted event dictionaries.
         """
-        config = self._load_llm_config() # Reusing this method to load full config if possible, or just modify _load_llm_config to load full config.
-        # Actually _load_llm_config only returns the llm block. Let's load the full config properly or assume defaults.
-        # For robustness, let's load it here again or trust defaults.
+        config = self._load_llm_config() 
         crawling_config = self._load_full_config().get('crawling_config', {})
         max_depth = crawling_config.get('max_depth', 2)
         max_pages = crawling_config.get('max_pages_per_site', 10)
@@ -51,7 +47,6 @@ class EventScraper:
                 page = await browser.new_page()
                 
                 for start_url in sites:
-                    # BFS Initialization
                     queue = [(start_url, 0)] # (url, depth)
                     visited = {start_url}
                     pages_scraped_count = 0
@@ -65,7 +60,6 @@ class EventScraper:
                         try:
                             self.logger.info(f"Crawling {current_url} (Depth: {current_depth})...")
                             
-                            # Navigate
                             try:
                                 response = await page.goto(current_url, wait_until="domcontentloaded", timeout=45000)
                             except Exception as e:
@@ -88,7 +82,7 @@ class EventScraper:
                             
                             for i, frame in enumerate(frames):
                                 try:
-                                    # Wait for frame to have some content if possible, or just grab it
+                                    # Wait for frame to have some content if possible
                                     frame_url = frame.url
                                     
                                     # Skip YouTube and other video platforms to save resources
@@ -99,9 +93,8 @@ class EventScraper:
                                     frame_desc = "Main Frame" if frame == page.main_frame else f"Frame {i} ({frame_url[:50]}...)"
                                     
                                     # Simple Frame Analysis (Static HTML)
-                                    # Just get the content and analyze it. No navigation.
                                     try:
-                                        # Wait for content to stabilize
+                                        # Wait up to 5s for content to stabilize
                                         await frame.wait_for_load_state("domcontentloaded", timeout=5000)
                                     except:
                                         pass
@@ -160,7 +153,7 @@ class EventScraper:
                 # Check domain
                 parsed = urlparse(href)
                 if parsed.netloc == allowed_domain:
-                    # Filter out non-html extensions roughly
+                    # Filter out non-html extensions to save resources
                     if not any(href.lower().endswith(ext) for ext in ['.pdf', '.jpg', '.png', '.zip', '.css', '.js']):
                         links.append(href)
         except Exception as e:
@@ -172,7 +165,7 @@ class EventScraper:
         """
         Extracts event data using extruct (standards) -> LLM (fallback).
         """
-        # Strategy 1 & 2: Standards (JSON-LD, Microdata)
+        # Strategy 1: Standards (JSON-LD, Microdata)
         data = extruct.extract(html_content, base_url=url, uniform=True)
         events = []
         if 'json-ld' in data:
@@ -184,7 +177,7 @@ class EventScraper:
                 if self._is_event(item):
                     events.append(item)
 
-        # Strategy 3: LLM Extraction (Fallback)
+        # Strategy 2: LLM Extraction (Fallback)
         if not events and self.client:
             self.logger.info("No structured data found. Attempting LLM extraction...")
             llm_events = self.llm_extraction(html_content)
@@ -212,7 +205,7 @@ class EventScraper:
 
         prompt = f"""
         You are an event extraction assistant.
-        Extract detailed martial arts event information from the following text.
+        Extract detailed event information from the following text.
         Return ONLY a raw JSON array of objects. Do not use markdown formatting.
         Each object should have:
         - name: string

@@ -1,7 +1,6 @@
 FROM python:3.11-slim
 
-# Install system dependencies required for Playwright
-# Playwright install-deps will handle most, but we need some basics first
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     wget \
     curl \
@@ -30,7 +29,6 @@ RUN playwright install --with-deps chromium
 
 # Copy source code and config
 COPY src/ ./src/
-
 
 # Create data directory
 RUN mkdir -p data
