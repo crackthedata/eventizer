@@ -102,3 +102,9 @@ Press `Ctrl+C` to stop following the logs (this will not stop the container).
 - `src/main.py`: Entry point, handles scheduling and async execution.
 - `src/scraper.py`: Core logic. Uses `playwright` to navigate and `extruct` + `openai` (for Ollama) to parse data.
 - `Dockerfile`: Python 3.11-slim base, installing Playwright dependencies and browsers.
+
+## Future enhancements
+1. Prompt tuning for different kinds of events or events in different industries.
+2. Implement a prompt library and traceable experiments.
+3. Experiment with different event @types to improve tagging.
+4. Try different local LLMs to evaluate how they differ.
