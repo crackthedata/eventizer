@@ -1,5 +1,6 @@
 # Eventizer: Locally Deployed Event Aggregator
 
+**Version:** 0.1.0 (See [CHANGELOG.md](CHANGELOG.md) for details)
 Eventizer is a containerized Python application that crawls and scrapes event information from various websites. It uses **Playwright** for robust browser automation and integrates with a **Local LLM (Ollama)** to extract structured event data from unstructured HTML.
 
 ## Features
@@ -63,9 +64,9 @@ First, create your configuration file:
 
 **Important:** The Docker image does **not** contain `config.json` by default. You must provide it at runtime via a volume mount.
 
-Build the Docker image:
+Remove any existing `eventizer` container before starting a new one, then build the image:
 ```bash
-docker build -t eventizer .
+docker rm -f eventizer; docker build -t eventizer .
 ```
 
 Run the scraper (Mounting config and data is **REQUIRED**):
@@ -108,3 +109,4 @@ Press `Ctrl+C` to stop following the logs (this will not stop the container).
 2. Implement a prompt library and traceable experiments.
 3. Experiment with different event @types to improve tagging.
 4. Try different local LLMs to evaluate how they differ.
+5. Utilize multi-hop reasoning or few-shot learning to improve event extraction accuracy.
