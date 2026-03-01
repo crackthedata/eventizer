@@ -1,6 +1,6 @@
 # Eventizer: Locally Deployed Event Aggregator
 
-**Version:** 0.1.0 (See [CHANGELOG.md](CHANGELOG.md) for details)
+**Version:** 0.2.0 (See [CHANGELOG.md](CHANGELOG.md) for details)
 Eventizer is a containerized Python application that crawls and scrapes event information from various websites. It uses **Playwright** for robust browser automation and integrates with a **Local LLM (Ollama)** to extract structured event data from unstructured HTML.
 
 ## Features
@@ -94,6 +94,17 @@ To verify the scraper is running and see what it's doing:
 docker logs -f eventizer
 ```
 Press `Ctrl+C` to stop following the logs (this will not stop the container).
+
+## Troubleshooting / Frequently Encountered Errors
+
+### Container Name Conflict
+If the `docker run` command fails stating the container "eventizer" already exists, remove it before running again:
+```bash
+docker rm -f eventizer
+```
+
+### Ollama Connection Issues
+If the scraper cannot reach Ollama, verify that Ollama is listening on `0.0.0.0` rather than `127.0.0.1` and that you configured the API base in `config.json` correctly (usually `http://host.docker.internal:11434/v1` for Docker Desktop on Windows/Mac).
 
 ## Configuration & Security
 - **`config.json`**: This file contains your target sites and potential API keys. It is ignored by git (`.gitignore`) to prevent accidental commits.
