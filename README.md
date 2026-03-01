@@ -63,9 +63,9 @@ First, create your configuration file:
 
 **Important:** The Docker image does **not** contain `config.json` by default. You must provide it at runtime via a volume mount.
 
-Build the Docker image:
+Remove any existing `eventizer` container before starting a new one, then build the image:
 ```bash
-docker build -t eventizer .
+docker rm -f eventizer; docker build -t eventizer .
 ```
 
 Run the scraper (Mounting config and data is **REQUIRED**):
