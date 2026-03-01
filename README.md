@@ -1,5 +1,6 @@
 # Eventizer: Locally Deployed Event Aggregator
 
+**Version:** 0.1.0 (See [CHANGELOG.md](CHANGELOG.md) for details)
 Eventizer is a containerized Python application that crawls and scrapes event information from various websites. It uses **Playwright** for robust browser automation and integrates with a **Local LLM (Ollama)** to extract structured event data from unstructured HTML.
 
 ## Features
@@ -108,3 +109,4 @@ Press `Ctrl+C` to stop following the logs (this will not stop the container).
 2. Implement a prompt library and traceable experiments.
 3. Experiment with different event @types to improve tagging.
 4. Try different local LLMs to evaluate how they differ.
+5. Utilize multi-hop reasoning or few-shot learning to improve event extraction accuracy.
